@@ -1,3 +1,5 @@
 all:
 	go build
-	./warp
+	
+service: all
+	systemctl restart warp.service
