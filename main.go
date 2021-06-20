@@ -1,16 +1,18 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"path/filepath"
-	"fmt"
+	"strconv"
 	"strings"
-	"io/ioutil"
+	"time"
 )
 
 var mimetypes Mimeconf = getMimeconf()
-
+var conf Config = getConf()
 
 var m map[string]string
 
@@ -34,6 +36,10 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
   	if (err != nil) {
 		fmt.Fprintf(w, "ERR WHILE READING FILE")
 	}
+	if conf.Templates {
+		year, _, _ := time.Now().Date()
+		dat = []byte(strings.ReplaceAll(string(dat), "{{YEAR}}", strconv.Itoa(year)))
+	}
 	if (!strings.HasSuffix(realpath, ".html")) {
 		base := filepath.Base(realpath)
 		ext := strings.ReplaceAll(filepath.Ext(base), ".", "")
@@ -50,7 +56,6 @@ func main() {
 		split := strings.Split(s, "|")
 		m[split[0]] = split[1]
 	}
-	conf := getConf()
 	addr := conf.Address
 	port := conf.Port
 	address := addr + ":" + port
