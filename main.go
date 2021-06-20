@@ -17,7 +17,6 @@ var conf Config = getConf()
 var m map[string]string
 
 
-
 func serveRoot(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	if (path == "/") {
@@ -37,8 +36,9 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "ERR WHILE READING FILE")
 	}
 	if conf.Templates {
-		year, _, _ := time.Now().Date()
+		year, month, _ := time.Now().Date()
 		dat = []byte(strings.ReplaceAll(string(dat), "{{YEAR}}", strconv.Itoa(year)))
+		dat = []byte(strings.ReplaceAll(string(dat), "{{MONTH}}", month.String()))
 	}
 	if (!strings.HasSuffix(realpath, ".html")) {
 		base := filepath.Base(realpath)
