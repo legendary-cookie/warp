@@ -36,11 +36,11 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		filehtml := "<!DOCTYPE html>\n<head>\n\t<title>"+path+"</title>\n</head><body><div><h3>Files and Directories in "+path+"</h3></div>"
+		filehtml := "<!DOCTYPE html><html>\n<head>\n\t<title>"+path+"</title>\n</head><body><div><h3>Files and Directories in "+path+"</h3></div><div id=\"files\">"
 		for _, file := range files {
 			filehtml = filehtml+"<div><a href=\""+path+"/"+file.Name()+"\">"+file.Name()+"</a></div>"
 		}
-		filehtml = filehtml+"</body>"
+		filehtml = filehtml+"</div></body></html>"
 		fmt.Fprintf(w, filehtml)
 		return
 	}
