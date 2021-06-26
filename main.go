@@ -36,9 +36,12 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "ERR WHILE READING FILE")
 	}
 	if conf.Templates {
-		year, month, _ := time.Now().Date()
-		dat = []byte(strings.ReplaceAll(string(dat), "{{YEAR}}", strconv.Itoa(year)))
-		dat = []byte(strings.ReplaceAll(string(dat), "{{MONTH}}", month.String()))
+		if !strings.Contains(string(dat), "###WARP_EXCLUDE") {
+			year, month, _ := time.Now().Date()
+			dat = []byte(strings.ReplaceAll(string(dat), "{{YEAR}}", strconv.Itoa(year)))
+			dat = []byte(strings.ReplaceAll(string(dat), "{{MONTH}}", month.String()))
+		}
+			dat = []byte(strings.ReplaceAll(string(dat), "###WARP_EXCLUDE", ""))
 	}
 	if (!strings.HasSuffix(realpath, ".html")) {
 		base := filepath.Base(realpath)
@@ -51,6 +54,7 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	fmt.Println("Starting warp webserver...")
 	m = make(map[string]string)
 	for _, s := range mimetypes.Mime {
 		split := strings.Split(s, "|")
@@ -59,6 +63,7 @@ func main() {
 	addr := conf.Address
 	port := conf.Port
 	address := addr + ":" + port
+	fmt.Println("Listening on: " +address)
 	http.HandleFunc("/", serveRoot)
 	log.Fatal(http.ListenAndServe(address, nil))
 }
