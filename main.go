@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"os"
 	"time"
 )
 
@@ -23,6 +24,26 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
 		path = "index.html"
 	}
 	realpath := filepath.Join("/var/lib/warp", path)
+	fi, err := os.Stat(realpath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(realpath)
+	fmt.Println(fi.Mode().IsDir())
+	if fi.Mode().IsDir() {
+		files, err := ioutil.ReadDir(realpath)
+		if err != nil {
+			fmt.Println(err)
+		}
+		filehtml := "<!DOCTYPE html>\n<head>\n\t<title>"+path+"</title>\n</head><body><div><h3>Files and Directories in "+path+"</h3></div>"
+		for _, file := range files {
+			filehtml = filehtml+"<div><a href=\""+path+"/"+file.Name()+"\">"+file.Name()+"</a></div>"
+		}
+		filehtml = filehtml+"</body>"
+		fmt.Fprintf(w, filehtml)
+		return
+	}
 	if (!Exists(realpath)) {
 		if (!Exists(realpath+".html" )) {
 			fmt.Fprintf(w, "<h1>404 Not found</h1>\n<p>Path: %v</p>", path)	
