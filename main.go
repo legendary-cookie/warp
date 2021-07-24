@@ -29,8 +29,8 @@ func serveRoot(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(realpath)
-	fmt.Println(fi.Mode().IsDir())
+//	fmt.Println(realpath)
+//	fmt.Println(fi.Mode().IsDir())
 	if fi.Mode().IsDir() {
 		files, err := ioutil.ReadDir(realpath)
 		if err != nil {
